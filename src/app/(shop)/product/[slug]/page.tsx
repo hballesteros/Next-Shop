@@ -1,10 +1,11 @@
 export const revalidate = 604080 // 7 days
 
-import { notFound } from "next/navigation";
+import { notFound } from 'next/navigation';
+import { Metadata, ResolvingMetadata } from 'next';
 
-import { getProductBySlug } from "@/actions";
-import { titleFont } from "@/config/fonts";
-import { ProductMobileSlideshow, ProductSlideshow, QuantitySelector, SizeSelector, StockLabel } from "@/components";
+import { getProductBySlug } from '@/actions';
+import { titleFont } from '@/config/fonts';
+import { ProductMobileSlideshow, ProductSlideshow, QuantitySelector, SizeSelector, StockLabel } from '@/components';
 
 
 interface Props {
@@ -12,6 +13,31 @@ interface Props {
     slug: string;
   }
 }
+
+export async function generateMetadata(
+  { params }: Props,
+  parent: ResolvingMetadata
+): Promise<Metadata> {
+  // read route params
+  const slug = params.slug
+ 
+  // fetch data
+  const product = await getProductBySlug(slug)
+ 
+  // optionally access and extend (rather than replace) parent metadata
+  // const previousImages = (await parent).openGraph?.images || []
+ 
+  return {
+    title: product?.title ?? 'Producto no encontrado',
+    description: product?.description ?? '',
+    openGraph: {
+      title: product?.title ?? 'Producto no encontrado',
+      description: product?.description ?? '',
+      images: [`/products/${ product?.images[1] }`], // la url de la imagen del producto completa desde https://...
+    },
+  }
+}
+
 
 export default async function ProductByPage({ params }: Props) {
 
