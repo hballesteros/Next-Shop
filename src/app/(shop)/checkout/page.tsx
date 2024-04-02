@@ -12,7 +12,7 @@ const productsInCart = [
 ]
 
 
-export default function() {
+export default function CheckoutPage() {
   return (
     <div className="flex justify-center items-center mb-72 px-10 sm:px-0">
       <div className="flex flex-col w-[1000px]">
@@ -96,7 +96,7 @@ export default function() {
               <p className="mb-5">
                 {/* Disclaimer */}
                 <span className="text-xs">
-                  Al hacer clic en "Colocar orden", acepto los <a href="#" className="underline">términos y condiciones</a> de compra y la <a href="#" className="underline">política de privacidad</a> de la empresa.
+                  Al hacer clic en &quot;Colocar orden&quot;, acepto los <a href="#" className="underline">términos y condiciones</a> de compra y la <a href="#" className="underline">política de privacidad</a> de la empresa.
                 </span>
               </p>
               
