@@ -1,3 +1,5 @@
+export const revalidate = 60 // 60 segundos
+
 import { getPaginatedProductsWithImages } from "@/actions";
 import { Pagination, ProductGrid, Title } from "@/components";
 import { Gender } from "@prisma/client";
@@ -21,7 +23,7 @@ export default async function( { params, searchParams }: Props ) {
   const { products, currentPage, totalPages } = await getPaginatedProductsWithImages({ page, gender })
  
   if ( products.length === 0 ) {
-    redirect('/')
+    redirect('/gender/men')
   }
 
   const labels = {
