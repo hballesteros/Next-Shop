@@ -6,6 +6,7 @@ import { Metadata, ResolvingMetadata } from 'next';
 import { getProductBySlug } from '@/actions';
 import { titleFont } from '@/config/fonts';
 import { ProductMobileSlideshow, ProductSlideshow, QuantitySelector, SizeSelector, StockLabel } from '@/components';
+import { AddToCart } from './ui/AddToCart';
 
 
 interface Props {
@@ -37,7 +38,6 @@ export async function generateMetadata(
     },
   }
 }
-
 
 export default async function ProductByPage({ params }: Props) {
 
@@ -82,20 +82,7 @@ export default async function ProductByPage({ params }: Props) {
           ${ product.price}
         </p>
 
-        {/* Selector de Talles */}
-        <SizeSelector 
-          selectedSize={ product.sizes[1]} 
-          availableSizes={product.sizes} 
-        />
-
-        {/* Selector de Cantidad*/}
-        <QuantitySelector quantity={1} />  
-
-        {/* Button */}
-        <button className="btn-primary my-5">
-            Agregar al carrito
-        </button>
-
+        <AddToCart product={ product }/>
 
         {/* Descripcion */}
         <h3 className="font-bold text-sm">Descripción</h3>
@@ -103,9 +90,7 @@ export default async function ProductByPage({ params }: Props) {
           { product.description }
         </p>
 
-
       </div>
-
 
     </div>
   );
