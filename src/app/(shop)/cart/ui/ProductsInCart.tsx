@@ -7,6 +7,10 @@ import { useCartStore } from "@/store"
 import { QuantitySelector } from '@/components'
 import Link from 'next/link'
 
+/**
+ * Renders the list of products in the cart.
+ * @returns JSX element
+ */
 export const ProductsInCart = () => {
 
   const updateProductQuantity = useCartStore( state => state.updateProductQuantity )
