@@ -1,7 +1,9 @@
 'use client'
 
+import { logout } from "@/actions"
 import { useUIStore } from "@/store"
 import clsx from "clsx"
+import { useSession } from "next-auth/react"
 import Link from "next/link"
 import { IoCloseOutline, IoLogInOutline, IoLogOutOutline, IoPeopleOutline, IoPersonOutline, IoSearchOutline, IoShirtOutline, IoTicketOutline } from "react-icons/io5"
 
@@ -10,6 +12,9 @@ export const Sidebar = () => {
 
     const isSideMenuOpen = useUIStore( state => state.isSideMenuOpen )
     const closeMenu = useUIStore( state => state.closeSideMenu )
+
+    const { data: session } = useSession()
+
 
     return (
         <div>
@@ -78,20 +83,21 @@ export const Sidebar = () => {
                 </Link>
                 
                 <Link
-                    href="/"
+                    href="/auth/login"
                     className="flex items-center mt-10 p-2 hover:bg-gray-100 rounded transition-all"
+                    onClick={ () => closeMenu() }
                 >
                     <IoLogInOutline size={30} />
                     <span className="ml-3 text-xl">Ingresar</span>
                 </Link>
                 
-                <Link
-                    href="/"
-                    className="flex items-center mt-10 p-2 hover:bg-gray-100 rounded transition-all"
+                <button
+                    className="flex w-full items-center mt-10 p-2 hover:bg-gray-100 rounded transition-all"
+                    onClick={ () => logout() }
                 >
                     <IoLogOutOutline size={30} />
                     <span className="ml-3 text-xl">Salir</span>
-                </Link>
+                </button>
 
                 
                 {/* Line Separator */}
