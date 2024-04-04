@@ -12,7 +12,7 @@ export async function authenticate(
   formData: FormData,
 ) {
   try {
-    await sleep(2)
+    //await sleep(2)
 
     console.log('formData', formData);
     
