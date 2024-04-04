@@ -6,7 +6,7 @@ import { IoCartOutline, IoSearchOutline } from 'react-icons/io5'
 
 import { titleFont } from '@/config/fonts'
 import { useCartStore, useUIStore } from '@/store'
-import { use, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 
 

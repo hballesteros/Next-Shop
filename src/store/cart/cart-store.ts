@@ -7,8 +7,8 @@ interface State {
   cart: CartProduct[]
   getTotalItems: () => number
   addProductToCart: (product: CartProduct) => void
-  //updateProductQuantity: (productId: string, quantity: number) => void
-  //removeProductFromCart: (productId: string) => void
+  updateProductQuantity: (product: CartProduct, quantity: number) => void
+  removeProductFromCart: (product: CartProduct) => void
 }
 
 
@@ -53,6 +53,30 @@ export const useCartStore = create<State>()(
         set({ cart: updatedCartProducts })
       },
 
+      updateProductQuantity: (product: CartProduct, quantity: number) => {
+        
+        const { cart } = get()
+
+        const updatedCartProducts = cart.map((item) =>
+          item.id === product.id && item.size === product.size
+            ? { ...item, quantity }
+            : item
+        )
+
+        set({ cart: updatedCartProducts })
+      },
+
+      removeProductFromCart: (product: CartProduct) => {
+        
+        const { cart } = get()
+        
+        const updatedCartProducts = cart.filter(
+          (item) => !(item.id === product.id && item.size === product.size)
+        )
+
+        set({ cart: updatedCartProducts })
+      },
+
     }) , {
       name: 'shopping-cart',
     }
@@ -60,3 +84,4 @@ export const useCartStore = create<State>()(
   )
 
 )
+

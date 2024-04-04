@@ -9,7 +9,15 @@ interface Props {
 }
 
 
-export const QuantitySelector = ({ quantity, onQuantityChanged }: Props) => {
+/**
+ * QuantitySelector component allows the user to select a quantity value.
+ *
+ * @param {Object} props - The component props.
+ * @param {number} props.quantity - The current quantity value.
+ * @param {Function} props.onQuantityChanged - The callback function to be called when the quantity value changes.
+ * @returns {JSX.Element} The QuantitySelector component.
+ */
+export const QuantitySelector = ({ quantity, onQuantityChanged }: Props ) => {
 
   const onValueChange = (value: number) => {
     if( quantity + value < 1 ) return
