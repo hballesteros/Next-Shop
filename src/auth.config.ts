@@ -4,6 +4,12 @@ import { z } from 'zod'
 import bcryptjs from 'bcryptjs';
 import prisma from './lib/prisma';
 
+const authenticatedRoutes = [
+  '/profile',
+  '/checkout',
+  '/checkout/address'
+]
+
 
 /**
  * Configuration object for authentication in the application.
@@ -14,6 +20,20 @@ export const authConfig: NextAuthConfig = {
     newUser: '/auth/new-account', // The page for creating a new account
   },
   callbacks: {
+
+    authorized({ auth, request: { nextUrl } }) {
+      console.log({ auth });
+      // TODO: Implementar la lógica de redirección
+      // const isLoggedIn = !!auth?.user;
+      // const isOnDashboard = nextUrl.pathname.startsWith( authenticatedRoutes[0] );
+      // if (isOnDashboard) {
+      //   if (isLoggedIn) return true;
+      //   return false; // Redirect unauthenticated users to login page
+      // } else if (isLoggedIn) {
+      //   return Response.redirect(new URL('/dashboard', nextUrl));
+      // }
+      return true;
+    },
 
     /**
      * Callback function for manipulating the JWT token.
