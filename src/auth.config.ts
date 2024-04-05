@@ -5,10 +5,17 @@ import bcryptjs from 'bcryptjs';
 import prisma from './lib/prisma';
 
 const authenticatedRoutes = [
+  '/cart',
+  'empty',
   '/profile',
   '/checkout',
-  '/checkout/address'
+  '/orders'
 ]
+const isOnAuthenticatedRoutes = (onRoute: string) => {
+  return authenticatedRoutes.some((authRoutes) =>
+    onRoute.startsWith(authRoutes)
+  );
+};
 
 
 /**
@@ -22,16 +29,15 @@ export const authConfig: NextAuthConfig = {
   callbacks: {
 
     authorized({ auth, request: { nextUrl } }) {
-      console.log({ auth });
-      // TODO: Implementar la lógica de redirección
-      // const isLoggedIn = !!auth?.user;
-      // const isOnDashboard = nextUrl.pathname.startsWith( authenticatedRoutes[0] );
-      // if (isOnDashboard) {
-      //   if (isLoggedIn) return true;
-      //   return false; // Redirect unauthenticated users to login page
-      // } else if (isLoggedIn) {
-      //   return Response.redirect(new URL('/dashboard', nextUrl));
-      // }
+
+      //console.log({ auth });
+
+      const isLoggedIn = !!auth?.user;
+
+      if (isOnAuthenticatedRoutes(nextUrl.pathname)) {
+        if (isLoggedIn) return true;
+        return false; // Redirect unauthenticated users to login page
+      }
       return true;
     },
 
