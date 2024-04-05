@@ -35,3 +35,25 @@ export async function authenticate(
     throw error;
   }
 }
+
+
+export const login = async (email: string, password: string) => {
+  
+  try {
+
+    await signIn('credentials', { email, password });
+
+    return {
+      ok: true,
+      message: 'Login successful'
+    }
+   
+  } catch (error) {
+    console.error('Failed to login', error);
+    return {
+      ok: false,
+      message: 'Failed to login'
+    }
+  }
+
+}
