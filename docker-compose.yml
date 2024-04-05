@@ -1,3 +1,13 @@
+# Docker Compose file for setting up a PostgreSQL database container.
+# This file defines a service named "postgres-db" that uses the "postgres:15.3" image.
+# The service is configured to restart always and sets the following environment variables:
+#   - POSTGRES_USER: The username for the PostgreSQL database.
+#   - POSTGRES_DB: The name of the PostgreSQL database.
+#   - POSTGRES_PASSWORD: The password for the PostgreSQL database.
+# The service also mounts the "./postgres" directory to "/var/lib/postgresql/data" inside the container,
+# allowing the database data to persist even if the container is restarted or recreated.
+# The service exposes port 5432 on the host machine, which can be used to connect to the PostgreSQL database.
+ 
 version: '3.8'
 
 services:
