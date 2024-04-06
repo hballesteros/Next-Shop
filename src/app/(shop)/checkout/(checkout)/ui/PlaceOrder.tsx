@@ -1,21 +1,51 @@
 'use client'
 
 import { useAddressStore, useCartStore } from "@/store"
-import { currencyFormat } from "@/utils"
+import { currencyFormat, sleep } from "@/utils"
+import clsx from "clsx"
 import Link from "next/link"
 import { useEffect, useState } from "react"
+import { set } from "zod"
 
 export const PlaceOrder = () => {
 
   const [loaded, setLoaded] = useState(false)
+  const [isPlacingOrder, setIsPlacingOrder] = useState(false)
 
   const address = useAddressStore((state) => state.address)
   const getSummaryInformation = useCartStore(state => state.getSummaryInformation())
   const { totalItems, subTotalPrice, tax, totalPrice } = getSummaryInformation
 
+  const cart = useCartStore(state => state.cart)
+
   useEffect(() => {
     setLoaded(true)
   }, [])
+
+  const onPlaceOrder = async () => {
+    setIsPlacingOrder(true)
+    // await sleep(2);
+
+    const productsToOrder = cart.map((product) => {
+      return {
+        productId: product.id,
+        quantity: product.quantity,
+        size: product.size,
+      }
+    })
+
+    console.log({ address, productsToOrder });
+    
+    
+
+    // Todo: Server Action
+    
+
+    setIsPlacingOrder(false)
+
+  }
+
+
 
   if (!loaded) {
     return <p>Cargando...</p>
@@ -69,12 +99,21 @@ export const PlaceOrder = () => {
           </span>
         </p>
 
+        <p className="text-red-500 mb-2">Error de creación</p>
 
         <button
           //href="/orders/123"
-          className="flex w-full btn-primary justify-center"
+          onClick={onPlaceOrder}
+          className={
+            clsx({
+              "flex w-full justify-center": true,
+              "btn-primary": !isPlacingOrder,
+              "btn-disabled": isPlacingOrder 
+            })
+          }
+          disabled={isPlacingOrder}
         >
-          Colocar orden
+          { isPlacingOrder ? "Colocando orden" : "Colocar orden"}
         </button>
       </div>
 
