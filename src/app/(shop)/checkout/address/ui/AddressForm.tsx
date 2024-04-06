@@ -1,7 +1,13 @@
-'use client';
+'use client'
 
-import clsx from "clsx";
-import { useForm } from "react-hook-form";
+import clsx from 'clsx'
+import { useForm } from 'react-hook-form'
+
+import type { Address, Country } from '@/interfaces'
+import { useAddressStore } from '@/store'
+import { useEffect } from 'react'
+import { deleteUserAddress, setUserAddress } from '@/actions'
+import { useSession } from 'next-auth/react'
 
 
 type FormInputs = {
@@ -16,19 +22,48 @@ type FormInputs = {
   rememberAddress: boolean;
 };
 
-export const AddressForm = () => {
+interface Props {
+  countries: Country[]
+  userStoredAddress?: Partial<Address>
+}
+
+export const AddressForm = ({ countries, userStoredAddress = {} }: Props) => {
 
 
-  const { handleSubmit, register, formState: { isValid } } = useForm<FormInputs>({
-
+  const { handleSubmit, register, formState: { isValid }, reset } = useForm<FormInputs>({
     defaultValues: {
-      //Todo: leer de la base de datos
+      ...(userStoredAddress as any),
+      rememberAddress: false
     }
-
   })
+
+  const { data: session } = useSession({
+    required: true
+  })
+
+  const setAddress = useAddressStore( state => state.setAddress )
+  const address = useAddressStore( state => state.address )
+
+
+  useEffect(() => {
+    if (address.firstName) {
+      reset(address)
+    }
+  }, [address])
+
 
   const onSubmit = async (data: FormInputs) => {
     console.log({data})
+
+    setAddress(data)
+    const { rememberAddress, ...addressData } = data
+
+    if ( data.rememberAddress ) {
+      setUserAddress(addressData, session!.user.id )
+    } else {
+      deleteUserAddress(session!.user.id)
+    }
+
   }
 
   return (
@@ -95,7 +130,11 @@ export const AddressForm = () => {
           {...register('country', { required: true })}
         >
           <option value="">[ Seleccione ]</option>
-          <option value="CRI">Costa Rica</option>
+          {
+            countries.map((country) => (
+              <option key={country.id} value={country.id}>{country.name}</option>
+            ))
+          }
         </select>
       </div>
 

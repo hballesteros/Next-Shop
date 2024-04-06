@@ -1,8 +1,25 @@
 import { Title } from '@/components'
-import Link from 'next/link'
 import { AddressForm } from './ui/AddressForm';
 
-export default function AddressPage() {
+import { getCountries, getUserAddress } from '@/actions';
+import { auth } from '@/auth.config';
+import { Address } from '../../../../interfaces/address.interface';
+
+export default async function AddressPage() {
+
+  const countries = await getCountries()
+  const session = await auth()
+
+  if (!session?.user) {
+    return (
+      <h3 className='text-5xl'>500 - No hay sesión de usuario</h3>
+    )
+  }
+
+  const userAddress = await getUserAddress(session.user.id) ?? {} 
+  console.log(userAddress);
+  
+
   return (
     <div className="flex flex-col sm:justify-center sm:items-center mb-72 px-10 sm:px-0">
 
@@ -10,7 +27,7 @@ export default function AddressPage() {
         
         <Title title="Dirección" subtitle="Dirección de entrega" />
 
-        <AddressForm />
+        <AddressForm countries={ countries } userStoredAddress={ userAddress } />
 
       </div>
 
