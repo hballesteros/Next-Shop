@@ -38,8 +38,9 @@ export const PlaceOrder = () => {
     console.log({ address, productsToOrder });
       
     // Todo: Server Action
-    await placeOrder(productsToOrder, address)
-    
+    const resp = await placeOrder(productsToOrder, address)
+    console.log({ resp });
+        
     setIsPlacingOrder(false)
 
   }
