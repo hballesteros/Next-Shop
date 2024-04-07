@@ -1,16 +1,18 @@
 'use client'
 
+import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
+import clsx from "clsx"
+
 import { placeOrder } from "@/actions"
 import { useAddressStore, useCartStore } from "@/store"
 import { currencyFormat, sleep } from "@/utils"
-import clsx from "clsx"
-import Link from "next/link"
-import { useEffect, useState } from "react"
-import { set } from "zod"
 
 export const PlaceOrder = () => {
 
+  const router = useRouter()
   const [loaded, setLoaded] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
   const [isPlacingOrder, setIsPlacingOrder] = useState(false)
 
   const address = useAddressStore((state) => state.address)
@@ -18,6 +20,7 @@ export const PlaceOrder = () => {
   const { totalItems, subTotalPrice, tax, totalPrice } = getSummaryInformation
 
   const cart = useCartStore(state => state.cart)
+  const clearCart = useCartStore(state => state.clearCart)
 
   useEffect(() => {
     setLoaded(true)
@@ -35,16 +38,19 @@ export const PlaceOrder = () => {
       }
     })
 
-    console.log({ address, productsToOrder });
-      
-    // Todo: Server Action
+    //! Server Action
     const resp = await placeOrder(productsToOrder, address)
-    console.log({ resp });
-        
-    setIsPlacingOrder(false)
+    if ( !resp.ok ) {
+      setIsPlacingOrder(false)
+      setErrorMessage(resp.message)
+      return
+    }
 
+    //* Todo salio bién
+    clearCart()
+    router.replace(`/orders/${resp.order!.id}`)
+    
   }
-
 
 
   if (!loaded) {
@@ -99,7 +105,7 @@ export const PlaceOrder = () => {
           </span>
         </p>
 
-        <p className="text-red-500 mb-2">Error de creación</p>
+        <p className="text-red-500 mb-2">{ errorMessage }</p>
 
         <button
           //href="/orders/123"
