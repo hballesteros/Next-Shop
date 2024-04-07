@@ -1,5 +1,6 @@
 'use client'
 
+import { placeOrder } from "@/actions"
 import { useAddressStore, useCartStore } from "@/store"
 import { currencyFormat, sleep } from "@/utils"
 import clsx from "clsx"
@@ -35,12 +36,10 @@ export const PlaceOrder = () => {
     })
 
     console.log({ address, productsToOrder });
-    
-    
-
+      
     // Todo: Server Action
+    await placeOrder(productsToOrder, address)
     
-
     setIsPlacingOrder(false)
 
   }
