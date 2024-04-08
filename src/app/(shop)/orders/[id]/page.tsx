@@ -1,18 +1,12 @@
-import Link from "next/link";
 import Image from "next/image";
 
 import clsx from 'clsx';
 import { IoCardOutline } from 'react-icons/io5';
 
 import { Title } from "@/components";
-import { initialData } from "@/seed/seed";
-
-
-const productsInCart = [
-  initialData.products[0],
-  initialData.products[1],
-  initialData.products[2],
-]
+import { getOrderById } from "@/actions";
+import { currencyFormat } from "@/utils";
+import { redirect } from "next/navigation";
 
 interface Props {
   params: {
@@ -20,17 +14,25 @@ interface Props {
   }
 }
 
-export default function OrderByPage({ params }: Props) {
+export default async function OrderByPage({ params }: Props) {
 
   const { id } = params;
-
-  // Todo: verificar si existe la orden con el id
-
+   
+  // Server action
+  const { ok, order } = await getOrderById(id);
+  
+  if( !ok ) {
+    redirect('/');
+  }
+  
+  const OrderItems = order!.OrderItem;
+  const OrderAddress = order!.OrderAddress;
+  
   return (
     <div className="flex justify-center items-center mb-72 px-10 sm:px-0">
       <div className="flex flex-col w-[1000px]">
 
-        <Title title= {`Orden #${ id }`} />
+        <Title title= {`Orden #${ id.split('-').at(-1) }`} />
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-10">
 
@@ -41,37 +43,36 @@ export default function OrderByPage({ params }: Props) {
               clsx(
                 "flex items-center rounded-lg py-2 px-3.5 text-xs font-bold text-white mb-5",
                 {
-                  'bg-red-500': false,
-                  'bg-green-700': true,
+                  'bg-red-500': !order!.isPaid,
+                  'bg-green-700': order!.isPaid,
                 }
               )
             }>
               <IoCardOutline size={ 30 }/>
-              {/* <span className="mx-2">Pendiente de pago</span> */}
-              <span className="mx-2">Pagada</span>
+              <span className="mx-2">{ order?.isPaid ? 'Pagada' : 'Pendiente de pago'}</span>
             </div>
             
 
             {/* Productos */}
             {
-              productsInCart.map( product => (
-                <div key={ product.slug } className="flex mb-5">
+              OrderItems.map( item => (
+                <div key={ `${item.product.slug}-${item.size}` } className="flex mb-5">
                   <Image 
-                    src={ `/products/${ product.images[0] }`} 
+                    src={ `/products/${ item.product.ProductImage[0].url }`} 
                     width={ 100 }
                     height={ 100 }
                     style={{
                       width: '100px',
                       height: '100px'
                     }}
-                    alt={ product.title }
+                    alt={ item.product.title }
                     className="mr-5 rounded"
                   />
 
                   <div>
-                    <p>{ product.title }</p>
-                    <p>${ product.price } x 3 </p>
-                    <p className="font-bold">Subtotal: ${ product.price * 3}</p>
+                    <p>{ item.product.title }</p>
+                    <p>${ item.price } x { item.quantity} </p>
+                    <p className="font-bold">Subtotal: ${ item.price * item.quantity}</p>
                   </div>
 
                 </div>
@@ -84,13 +85,16 @@ export default function OrderByPage({ params }: Props) {
             
             <h2 className="text-2xl mb-2">Dirección de entrega</h2>
             <div className="mb-10">
-              <p className="text-xl">Hugo Ballesteros</p>
-              <p>Petrochi 5302</p>
-              <p>Barrio San Sebastian</p>
-              <p>Zelaya, Pilar</p>
-              <p>Provincia de Buenos Aires</p>
-              <p>CP 1636</p>
-              <p>1130220444</p>
+              <p className="text-xl">
+                  {OrderAddress!.firstName} {OrderAddress!.lastName}
+              </p>
+              <p>{OrderAddress!.address}</p>
+              <p>{OrderAddress!.address2}</p>
+              <p>{OrderAddress!.postalCode}</p>
+              <p>
+                {OrderAddress!.city}, {OrderAddress!.country!.name}
+              </p>
+              <p>{OrderAddress!.phone}</p>
             </div>
 
             {/* Divider */}
@@ -101,16 +105,16 @@ export default function OrderByPage({ params }: Props) {
             <div className="grid grid-cols-2">
 
               <span>No. Productos</span>
-              <span className="text-right">3 artículos</span>
+              <span className="text-right">{ order!.itemsInOrder === 1 ? '1 artículo' : `${order!.itemsInOrder} artículos`} </span>
               
               <span>Subtotal</span>
-              <span className="text-right">$ 100</span>
+              <span className="text-right">{ currencyFormat(order!.subTotal) }</span>
               
               <span>Impuestos (15%)</span>
-              <span className="text-right">$ 15</span>
+              <span className="text-right">{ currencyFormat(order!.tax) }</span>
               
               <span className="mt-5 text-2xl">Total:</span>
-              <span className="mt-5 text-2xl text-right">$ 115</span>
+              <span className="mt-5 text-2xl text-right">{ currencyFormat(order!.total) }</span>
 
             </div>
 
@@ -121,21 +125,18 @@ export default function OrderByPage({ params }: Props) {
               clsx(
                   "flex items-center rounded-lg py-2 px-3.5 text-xs font-bold text-white mb-5",
                   {
-                    'bg-red-500': false,
-                    'bg-green-700': true,
+                    'bg-red-500': !order?.isPaid,
+                    'bg-green-700': order?.isPaid,
                   }
                 )
               }>
                 <IoCardOutline size={ 30 }/>
-                {/* <span className="mx-2">Pendiente de pago</span> */}
-                <span className="mx-2">Pagada</span>
+                <span className="mx-2">{ order?.isPaid ? 'Pagada' : 'Pendiente de pago'}</span>
               </div>
               
             </div>
 
-
           </div>
-
 
         </div>
 

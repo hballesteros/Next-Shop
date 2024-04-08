@@ -3,7 +3,6 @@ import { AddressForm } from './ui/AddressForm';
 
 import { getCountries, getUserAddress } from '@/actions';
 import { auth } from '@/auth.config';
-import { Address } from '../../../../interfaces/address.interface';
 
 export default async function AddressPage() {
 
