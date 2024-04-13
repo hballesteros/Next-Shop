@@ -1,6 +1,8 @@
 'use server'
 
 import { PayPalOrderStatusResponse } from "@/interfaces";
+import prisma from "@/lib/prisma";
+import { revalidatePath } from "next/cache";
 
 
 export const paypalCheckPayment = async (paypalTransactionId: string) => {
@@ -25,7 +27,7 @@ export const paypalCheckPayment = async (paypalTransactionId: string) => {
   }
     
   const { status, purchase_units  } = resp
-  // const {  } = purchase_units[0]  // TODO: invoice ID
+  const { invoice_id: orderId } = purchase_units[0]
 
   if ( status !== 'COMPLETED' ) {
     return {
@@ -35,9 +37,34 @@ export const paypalCheckPayment = async (paypalTransactionId: string) => {
   }
 
   // TODO: realizar la actualización en nuestra base de datos
+  try {
+    console.log({ status, purchase_units });
 
-  console.log({ status, purchase_units });
-  
+    await prisma.order.update({
+      where: {
+        id: orderId
+      },
+      data: {
+        isPaid: true,
+        paidAt: new Date()
+      }
+    })
+
+    // TODO: Revalidar un path
+    revalidatePath(`/orders/${orderId}`)
+
+    return {
+      ok: true,
+      message: 'Pago completado'
+    }
+
+  } catch (error) {
+    console.log(error)
+    return {
+      ok: false,
+      message: 'Error al actualizar el estado del pago'
+    }
+  }
 
 }
 
@@ -67,7 +94,10 @@ const getPayPalBearerToken = async (): Promise<string | null> => {
   };
 
   try {
-    const result = await fetch(oauth2Url, requestOptions).then(r => r.json())
+    const result = await fetch(oauth2Url, {
+      ...requestOptions,
+      cache: 'no-cache'
+    }).then(r => r.json())
     return result.access_token
 
   } catch (error) {
@@ -90,7 +120,10 @@ const verifyPayPalPayment = async (paypalTransactionId: string, bearerToken: str
   };
 
   try {
-    const resp = await fetch(paypalOrderUrl, requestOptions).then(r => r.json())
+    const resp = await fetch(paypalOrderUrl, {
+      ...requestOptions,
+      cache: 'no-cache'
+    }).then(r => r.json())
     return resp
   
   } catch (error) {
