@@ -1,5 +1,6 @@
 import exp from 'constants'
 
+export * from './paypal/PayPalButton'
 
 export * from './product/quantity-selector/QuantitySelector'
 export * from './product/size-selector/SizeSelector'
@@ -10,7 +11,7 @@ export * from './products/product-grid/ProductGrid'
 export * from './products/product-grid/ProductGridItem'
 export * from './products/product-grid/ProductGridItem2'
 
-export * from './provider/Provider'
+export * from './providers/Providers'
 
 export * from './ui/footer/Footer'
 export * from './ui/not-found/PageNotFound'
