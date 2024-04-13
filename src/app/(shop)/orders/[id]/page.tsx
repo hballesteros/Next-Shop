@@ -20,6 +20,7 @@ export default async function OrderByPage({ params }: Props) {
    
   // Server action
   const { ok, order } = await getOrderById(id);
+
   
   if( !ok ) {
     redirect('/');
