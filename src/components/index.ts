@@ -1,5 +1,7 @@
 import exp from 'constants'
 
+export * from './orders/OrderStatus'
+
 export * from './paypal/PayPalButton'
 
 export * from './product/quantity-selector/QuantitySelector'
@@ -19,3 +21,4 @@ export * from './ui/pagination/Pagination'
 export * from './ui/sidebar/Sidebar'
 export * from './ui/title/Title'
 export * from './ui/top-menu/TopMenu'
+
